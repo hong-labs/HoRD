@@ -1,0 +1,25 @@
+# @package _global_
+
+# Mixed training configuration
+# Combines near-future frames, far-future frames, and text embeddings
+
+env:
+  config:
+    masked_mimic:
+      masked_mimic_masking:
+        joint_masking:
+          # Inherits g1_body settings to keep key-body conditioning consistent
+          # This avoids configuration conflicts during mixed training
+          
+          # Mixed temporal masking strategy
+          time_gap_mask_min_steps: 1
+          time_gap_mask_max_steps: 4
+          masked_mimic_time_gap_probability: 0.3  # 30% probability to apply temporal masking
+          masked_mimic_repeat_mask_probability: 0.8  # 80% probability to repeat the masking pattern
+          
+          # When long-term conditioning is active, always mask near-future frames
+          with_conditioning_max_gap_probability: 1.0  # 100% probability
+
+        # Mixed information-source strategy
+        target_pose_visible_prob: 0.6  # 60% probability to see far-future poses
+        motion_text_embeddings_visible_prob: 0.4  # 40% probability to see text embeddings

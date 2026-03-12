@@ -1,0 +1,86 @@
+# @package _global_
+
+# Configuration for historical_self_obs_with_actions model (compatible with both MLP and Transformer)
+# 
+# This configuration file should be included in the experiment config's defaults list
+# to enable historical_self_obs_with_actions functionality.
+# 
+# NOTE: This feature is now compatible with both MLP and Transformer actors.
+# The system will automatically detect the model type and use the appropriate configuration.
+# 
+# Usage:
+# 1. In experiment config (e.g., transformer_flat_terrain.yaml or mlp_flat_terrain.yaml), add this line to defaults:
+#    - /agent/mimic/models/transformer_actor_historical_self_obs_with_actions
+# 2. The enabled flag is automatically set to True when this config is included
+# 
+# To disable:
+# 1. Comment out the line in experiment config's defaults list
+# 2. The enabled flag will remain False in the base config
+
+agent:
+  config:
+    modules:
+      # Universal historical_self_obs_with_actions model that adapts to model type
+      historical_self_obs_with_actions_model:
+        _target_: hord.agents.common.mlp.MLP_WithNorm
+        _recursive_: False
+        # For MLP: historical_self_obs_with_actions is flattened to (num_envs, -1)
+        # So num_in should be the flattened size per environment
+        # 4 steps * 523 dims per step = 2092
+        num_in: 2092
+        # Use fixed size for compatibility with both MLP and Transformer
+        num_out: 512
+        config:
+          obs_key: historical_self_obs_with_actions
+          normalize_obs: true
+          norm_clamp_value: 5
+          layers:
+            - units: 512
+              activation: relu
+              use_layer_norm: false
+            - units: 512
+              activation: relu
+              use_layer_norm: false
+            - units: 512
+              activation: relu
+              use_layer_norm: false
+
+    model:
+      config:
+        actor:
+          config:
+            mu_model:
+              config:
+                input_models:
+                  # Add historical_self_obs_with_actions as an additional input
+                  historical_self_obs_with_actions: ${agent.config.modules.historical_self_obs_with_actions_model}
+
+        # Add historical_self_obs_with_actions to Encoder and Prior
+        # Note: Encoder and Prior use MultiHeadedMLP, so we need to add it to their input_models
+        encoder:
+          config:
+            trunk:
+              config:
+                input_models:
+                  # Add historical_self_obs_with_actions to Encoder
+                  historical_self_obs_with_actions: ${agent.config.modules.historical_self_obs_with_actions_model}
+        
+        prior:
+          config:
+            trunk:
+              config:
+                input_models:
+                  # Add historical_self_obs_with_actions to Prior
+                  historical_self_obs_with_actions: ${agent.config.modules.historical_self_obs_with_actions_model}
+
+    extra_inputs:
+      historical_self_obs_with_actions: true
+
+env:
+  config:
+    humanoid_obs:
+      historical_self_obs_with_actions:
+        enabled: True
+        max_num_historical_steps: 4
+        with_time: True
+

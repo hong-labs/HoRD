@@ -1,0 +1,23 @@
+# @package _global_
+
+# Far-future-only training configuration
+# Similar to no_constraint, but using g1 key-body settings
+
+env:
+  config:
+    masked_mimic:
+      masked_mimic_masking:
+        joint_masking:
+          # Force masking of all near-future frames; show only far-future poses
+          masked_mimic_time_gap_probability: 1
+          masked_mimic_repeat_mask_probability: 1
+          time_gap_mask_min_steps: 1000000  # Force masking of all near-future frames
+          time_gap_mask_max_steps: 1000001
+          
+          # Inherit g1_body settings to keep key-body conditioning consistent
+          # This avoids configuration conflicts during mixed setups
+        # Show only far-future poses, hide text embeddings
+        target_pose_visible_prob: 1  # 100% probability to see far-future poses
+        motion_text_embeddings_visible_prob: 0  # 0% probability to see text embeddings
+
+

@@ -1,0 +1,29 @@
+# @package _global_
+
+defaults:
+  - /agent/mimic/agent
+  - /env/mimic
+
+  - /agent/ppo/models/transformer_actor
+  - /agent/ppo/models/mlp_critic_large
+  - /agent/mimic/models/transformer_actor_target_pose
+  - /agent/mimic/models/mlp_critic_target_pose
+  - /agent/mimic/options/global_tracking
+  - /agent/mimic/options/early_termination_tracking_err
+  # To enable historical_self_obs_with_actions (compatible with both MLP and Transformer), uncomment the following line:
+  - /agent/mimic/models/transformer_actor_historical_self_obs_with_actions
+  # 
+  # Usage:
+  # 1. To enable: uncomment the line above (enabled flag is automatically set to True)
+  # 2. To disable: comment out the line above (enabled flag remains False in base config)
+  # 
+  # NOTE: This feature is now compatible with both MLP and Transformer actors.
+
+env:
+  config:
+    humanoid_obs:
+      num_historical_steps: 4
+    mimic_target_pose:
+      type: max-coords-future-rel
+      with_time: true
+      num_future_steps: 4

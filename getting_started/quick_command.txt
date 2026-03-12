@@ -1,0 +1,37 @@
+python protomotions/eval_agent.py +base=[fabric,structure] +exp=deepmimic_mlp +robot=g1 +simulator=genesis +checkpoint=null +training_max_steps=1 +motion_file=data/yaml_files/train_g1.pt env.config.sync_motion=True ref_respawn_offset=0 +headless=False ++num_envs=1 +experiment_name=play_motions
+
+python protomotions/train_agent.py +exp=full_body_tracker/transformer_flat_terrain +robot=g1 +simulator=isaacgym motion_file=data/yaml_files/train_g1.pt +experiment_name=full_body_tracking_g1_isaacgym
+
+
+python protomotions/train_agent.py +exp=full_body_tracker/transformer_amp_flat_terrain +robot=g1 +simulator=isaaclab motion_file=data/yaml_files/train_g1_new.pt +experiment_name=full_body_g1_amp_isaaclab
+
+python protomotions/train_agent.py +exp=full_body_tracker/transformer_amp_flat_terrain +robot=g1 +simulator=genesis motion_file=data/yaml_files/train_g1_new.pt +experiment_name=full_body_g1_amp_genesis
+
+python protomotions/eval_agent.py +robot=g1 +simulator=isaaclab +checkpoint=results/full_body_g1_amp_genesis/last.ckpt
+
+Genesis
+RTX4060
+120
+3840
+
+###motion generaton
+python data/scripts/convert_g1_to_isaac.py data/amass/
+
+python data/scripts/create_motion_fps_yaml.py data/amass/ --output-path=data/yaml_files/ --humanoid-type=g1
+
+python data/scripts/process_hml3d_data.py data/yaml_files/hmd3d_g1.yaml data/amass/  --humanoid-type=g1 --motion-fps-path=data/yaml_files/motion_fps_g1.yaml
+
+python data/scripts/package_motion_lib.py data/yaml_files/hmd3d_g1.yaml data/amass/ data/yaml_files/train_g1.pt --humanoid-type=g1 --create-text-embeddings
+
+
+isaacgym:
+export LD_LIBRARY_PATH=/environment/miniconda3/envs/isaacgym/lib
+
+robocasa:
+export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6
+
+git rm -r --cached .
+
+sudo systemctl enable --now ssh
+
+tensorboard --logdir results/ --port 6006 --host=0.0.0.0

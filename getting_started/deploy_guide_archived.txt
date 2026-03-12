@@ -1,0 +1,21 @@
+git clone --branch git@github.com:tonywang-0517/protoVLA.git
+wget https://developer.nvidia.com/isaac-gym-preview-4
+tar -xvzf IsaacGym_Preview_4_Package.tar.gz\?__token__
+conda create -n isaacgym python=3.8
+conda activate isaacgym
+pip install -e isaacgym/python
+cd NeuroGroove/
+pip install -e .
+pip install -r requirements_isaacgym.txt
+pip install -e isaac_utils
+pip install -e poselib
+alias PYTHON_PATH=python
+export LD_LIBRARY_PATH=${CONDA_PREFIX}/lib/
+cd data/yaml_files
+featurize dataset download 597c2f4f-fce8-4e31-ad33-65665aeb376e
+unzip train_g1.zip
+pip install -U 'tensorboard'
+
+python protomotions/train_agent.py +exp=full_body_tracker/transformer_amp_flat_terrain +robot=g1 +simulator=isaacgym motion_file=data/yaml_files/train_g1.pt +experiment_name=full_body_tracker num_envs=1024
+
+python protomotions/train_agent.py +exp=full_body_tracker/transformer_flat_terrain +robot=g1 +simulator=isaacgym motion_file=data/yaml_files/train_g1.pt +experiment_name=full_body_tracker num_envs=1024

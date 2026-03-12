@@ -1,0 +1,20 @@
+# @package _global_
+
+# Near-future-only training configuration
+# All key bodies are fully visible with no masking
+
+env:
+  config:
+    masked_mimic:
+      masked_mimic_masking:
+        joint_masking:
+          # Disable temporal masking; near-future frames remain visible
+          masked_mimic_time_gap_probability: 0
+          masked_mimic_repeat_mask_probability: 1
+          with_conditioning_max_gap_probability: 1.0
+          time_gap_mask_min_steps: -2
+          time_gap_mask_max_steps: -1
+
+        # Hide far-future poses and text; keep only near-future inputs
+        target_pose_visible_prob: 0  # 0% probability to see far-future poses (fully masked)
+        motion_text_embeddings_visible_prob: 0  # 0% probability to see text embeddings

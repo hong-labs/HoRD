@@ -1,0 +1,27 @@
+# @package _global_
+
+# Near-future-focused key-body conditioning configuration
+# All key bodies are fully visible with no masking
+
+env:
+  config:
+    masked_mimic:
+      masked_mimic_masking:
+        joint_masking:
+          # Expose all key bodies without masking
+          masked_mimic_fixed_conditioning:
+            # Five key bodies, fully exposed (head removed)
+            - body_name: "pelvis"
+              constraint_state: 1  # fully exposed
+            - body_name: "left_ankle_pitch_link"
+              constraint_state: 1  # fully exposed
+            - body_name: "right_ankle_pitch_link"
+              constraint_state: 1  # fully exposed
+            - body_name: "left_rubber_hand"
+              constraint_state: 1  # fully exposed
+            - body_name: "right_rubber_hand"
+              constraint_state: 1  # fully exposed
+
+          # Disable random body selection to always use fixed conditioning
+          force_max_conditioned_bodies_prob: 1
+          force_small_num_conditioned_bodies_prob: 0

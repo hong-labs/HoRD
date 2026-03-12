@@ -1,0 +1,45 @@
+# @package _global_
+
+defaults:
+  - /agent/masked_mimic/agent_no_vae
+  - /env/mimic
+
+  - /agent/masked_mimic/models_no_vae/encoder
+  - /agent/masked_mimic/models_no_vae/text_conditioning
+  - /terrain/complex
+  - /agent/masked_mimic/models/terrain
+  - /agent/mimic/options/global_tracking
+  - /agent/mimic/options/early_termination_tracking_err
+  - /agent/mimic/models/transformer_actor_historical_self_obs_with_actions
+  - /opt/masked_mimic/constraints/g1_body
+  
+  # Training mode selection - controlled by manual commenting
+  # Choose one of the four modes below:
+  
+  # 1. Train only far-future frames (similar to no_constraint)
+  # - /opt/masked_mimic/constraints/far_future_only
+  
+  # 2. Train only near-future frames, with all key bodies visible
+  # - /opt/masked_mimic/constraints/near_future_only
+  
+  # 3. Text-embedding only, with no far-future or near-future poses
+  # - /opt/masked_mimic/constraints/text_only
+  
+  # 4. Mixed training (previous g1_mocap_key_bodies behavior)
+  - /opt/masked_mimic/constraints/mixed_training
+
+env:
+  config:
+    mimic_target_pose:
+      enabled: true
+      type: max-coords-future-rel
+      with_time: true
+      num_future_steps: 4
+    masked_mimic:
+      enabled: true
+      masked_mimic_target_pose:
+        num_future_steps: 4
+      historical_obs:
+        num_historical_conditioned_steps: 4
+    humanoid_obs:
+      num_historical_steps: 4

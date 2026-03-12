@@ -1,0 +1,19 @@
+# @package _global_
+
+# Text-only embedding configuration
+# No near-future or far-future pose input; relies entirely on text guidance
+
+env:
+  config:
+    masked_mimic:
+      masked_mimic_masking:
+        joint_masking:
+          # Force masking of near-future frames; keep only text guidance
+          masked_mimic_time_gap_probability: 1  # 100% probability to apply temporal masking
+          masked_mimic_repeat_mask_probability: 1  # 100% probability to repeat the masking pattern
+          time_gap_mask_min_steps: 1000000  # Force masking of all near-future frames
+          time_gap_mask_max_steps: 1000001
+
+        # Show only text embeddings; hide far-future target poses
+        target_pose_visible_prob: 0  # 0% probability to see far-future poses
+        motion_text_embeddings_visible_prob: 1  # 100% probability to see text embeddings
